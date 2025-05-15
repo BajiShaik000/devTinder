@@ -1,26 +1,26 @@
 const express = require("express");
 
 const app = express();
+// app.use("/", (err, req, res, next) => {
+//   if (err) {
+//     res.status(500).send("Error occured");
+//   }
+// });
 
-const { adminAuth, userAuth } = require("./middleware/Auth");
-
-app.use("/admin", adminAuth);
-
-app.get("/admin/getalldata", (req, res) => {
-  res.send("All data sent");
+app.get("/getUserData", (req, res) => {
+  try {
+  throw new Error("Something went wrong");
+  res.send("user data sent");
+  } catch (error) {
+    res.status(500).send("some Error occured contact support team");
+  }
 });
 
-app.get("/admin/deleteData", (req, res) => {
-  res.send("Deleted the data");
-});
-
-app.get("/user/login", (req, res) => {
-  res.send("Login data");
-});
-
-app.get("/user", userAuth, (req, res) => {
-  res.send("received the user data");
-});
+// app.use("/", (err, req, res, next) => {
+//   if (err) {
+//     res.status(500).send("Error occured");
+//   }
+// });
 
 app.listen("7777", () => {
   console.log("Server started successfully on port 7777....");
