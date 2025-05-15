@@ -2,27 +2,25 @@ const express = require("express");
 
 const app = express();
 
-app.use("/", (req, res, next) => {
-  //this is called as middleware
-  next();
+const { adminAuth, userAuth } = require("./middleware/Auth");
+
+app.use("/admin", adminAuth);
+
+app.get("/admin/getalldata", (req, res) => {
+  res.send("All data sent");
 });
 
-app.use(
-  "/user",
-  (req, res, next) => {
-    // this is also middleware
-    next();
-  },
-  (req, res, next) => {
-    // this is also middleware
-    next();
-  },
-  (req, res) => {
-    // this is route handler as it is sending the response back to client
-    console.log("Handling the route user2");
-    res.send("Handled!!");
-  }
-);
+app.get("/admin/deleteData", (req, res) => {
+  res.send("Deleted the data");
+});
+
+app.get("/user/login", (req, res) => {
+  res.send("Login data");
+});
+
+app.get("/user", userAuth, (req, res) => {
+  res.send("received the user data");
+});
 
 app.listen("7777", () => {
   console.log("Server started successfully on port 7777....");
