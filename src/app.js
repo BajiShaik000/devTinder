@@ -4,19 +4,113 @@ const User = require("./models/User");
 
 const app = express();
 
-app.post("/signup", async (req, res) => {
-  const user = new User({
-    firstName: "Sachin",
-    lastName: "Tendulkar",
-    email: "sachin@tendulkar.com",
-    password: "sachin@123",
-  });
+app.use(express.json());
 
+app.post("/signup", async (req, res) => {
+  //creating user instance
+
+  const user = new User(req.body);
   try {
     await user.save();
     res.send("User added successfully");
   } catch (err) {
     res.status(400).send("Unable add User" + err.message);
+  }
+});
+
+app.get("/user", async (req, res) => {
+  const userEmail = req.body.email;
+
+  try {
+    const user = await User.findOne({ email: userEmail });
+    if (!user) {
+      res.status(404).send("User not found");
+    } else {
+      res.send(user);
+    }
+    // const users = await User.find({ email: userEmail });
+    // if (users.length === 0) {
+    //   res.status(404).send("User not found");
+    // } else {
+    //   res.send(users);
+    // }
+  } catch (err) {
+    res.status(400).send("Something went wrong!!!");
+  }
+});
+
+//deleting user
+app.delete("/user", async (req, res) => {
+  const userId = req.body.userId;
+  try {
+    const user = await User.findByIdAndDelete(userId);
+    if (!user) {
+      res.status(404).send("User not found");
+    } else {
+      res.send("User deleted successfully");
+    }
+  } catch (error) {
+    res.send(400).send("Something went wrong");
+  }
+});
+
+app.patch("/user", async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  try {
+    const user = await User.findByIdAndUpdate(userId, data, {
+      returnDocument: "after",
+    });
+    console.log(user);
+    if (!user) {
+      res.status(404).send("Unable to find and update user");
+    } else {
+      res.send(user);
+    }
+  } catch (error) {
+    res.status(400).send("Something went wrong");
+  }
+});
+
+app.patch("/userByEmail", async (req, res) => {
+  const email = req.body.email;
+  const body = req.body;
+  try {
+    const user = await User.findOneAndUpdate({ email: email }, body);
+    if (!user) {
+      res.status(404).send("User not found to update");
+    } else {
+      res.send(user);
+    }
+  } catch (error) {
+    res.status(400).send("Something went wrong");
+  }
+});
+
+app.get("/userById", async (req, res) => {
+  const userId = req.body.id;
+  try {
+    const user = await User.findById(userId);
+    if (!user) {
+      res.status(404).send("User not found");
+    } else {
+      res.send(user);
+    }
+  } catch (error) {
+    res.send(400).send("Something went wrong");
+  }
+});
+
+app.get("/feed", async (req, res) => {
+  try {
+    const users = await User.find({});
+    if (users.length === 0) {
+      res.status(404).send("Users not found");
+    } else {
+      res.send(users);
+    }
+  } catch (err) {
+    res.status(400).send("Something went wrong!!!");
   }
 });
 
