@@ -1,22 +1,32 @@
 const express = require("express");
 const connectDB = require("./config/datbase");
 const User = require("./models/User");
+const { validateSignUpData } = require("./utils/validation");
+const bcrypt = require("bcrypt");
 
 const app = express();
 
 app.use(express.json());
 
 app.post("/signup", async (req, res) => {
-  //creating user instance
-  const user = new User(req.body);
   try {
-    if (req?.body?.skills?.length > 10) {
-      throw new Error("Cannot update more than 10 skills");
-    }
+    //validate the request data
+    validateSignUpData(req);
+    //encrypt the password
+    const { firstName, lastName, email, password } = req.body;
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+    //creating user instance
+    const user = new User({
+      firstName,
+      lastName,
+      email,
+      password: passwordHash,
+    });
     await user.save();
     res.send("User added successfully");
   } catch (err) {
-    res.status(400).send("Unable add User " + err.message);
+    res.status(400).send("Error: " + err.message);
   }
 });
 
