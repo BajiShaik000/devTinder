@@ -10,10 +10,13 @@ app.post("/signup", async (req, res) => {
   //creating user instance
   const user = new User(req.body);
   try {
+    if (req?.body?.skills?.length > 10) {
+      throw new Error("Cannot update more than 10 skills");
+    }
     await user.save();
     res.send("User added successfully");
   } catch (err) {
-    res.status(400).send("Unable add User" + err.message);
+    res.status(400).send("Unable add User " + err.message);
   }
 });
 
@@ -74,7 +77,7 @@ app.patch("/user/:userId", async (req, res) => {
       throw new Error("cannot update the fields");
     }
 
-    if (data.skills.length > 10) {
+    if (data?.skills?.length > 10) {
       throw new Error("Cannot update more than 10 skills");
     }
 
